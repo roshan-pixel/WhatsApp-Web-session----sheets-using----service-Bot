@@ -1,0 +1,23 @@
+# Credentials & Secrets
+*.json
+!data/sample_*.json
+credentials/
+
+# Data & Images
+data/tx_images/
+data/crops/
+data/*.json
+
+# Python & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+.venv/
+
+# OS Specific
+Thumbs.db
+Desktop.ini
+.DS_Store
