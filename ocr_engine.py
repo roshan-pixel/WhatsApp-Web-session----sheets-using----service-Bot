@@ -122,7 +122,7 @@ $results | ConvertTo-Json -Depth 5 | Set-Content -Path $OutFile -Encoding utf8
                 str(image_path.resolve())
             ]
             res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            return json.loads(res.stdout.strip())
+            return json.loads(res.stdout.strip(), strict=False)
         finally:
             Path(script_path).unlink(missing_ok=True)
 
@@ -153,9 +153,10 @@ $results | ConvertTo-Json -Depth 5 | Set-Content -Path $OutFile -Encoding utf8
 
     @staticmethod
     def crop_amount_region(image_path: Path, output_crop_path: Path) -> Path:
-        """Crop the focal amount region (14% - 32% vertical span) for precise amount verification."""
+        """Crop the focal amount region (18% - 28% vertical span, offset from rupee glyph) for precise amount verification."""
         with Image.open(image_path) as im:
             w, h = im.size
-            crop = im.crop((0, int(h * 0.14), w, int(h * 0.32)))
-            crop.save(output_crop_path)
+            crop = im.crop((int(w * 0.22), int(h * 0.18), int(w * 0.88), int(h * 0.28)))
+            crop_resized = crop.resize((crop.width * 2, crop.height * 2))
+            crop_resized.save(output_crop_path)
             return output_crop_path

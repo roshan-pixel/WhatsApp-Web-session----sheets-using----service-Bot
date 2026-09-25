@@ -128,14 +128,25 @@ class SheetsSyncer:
 
         checkpoint_row = self.find_checkpoint_row(checkpoint_utr)
         start_row = checkpoint_row + 1
-        end_row = start_row + len(rows_to_insert) - 1
-        cell_range = f"A{start_row}:E{end_row}"
-
-        logger.info(f"Batch updating range {cell_range}...")
-        self.ws.update(
-            range_name=cell_range,
-            values=rows_to_insert,
-            value_input_option="USER_ENTERED"
-        )
+        
+        # Check if downstream row is already populated (e.g. CASH, totals, or formulas)
+        existing_downstream = self.ws.row_values(start_row)
+        if any(cell.strip() for cell in existing_downstream):
+            logger.info(f"Downstream row {start_row} already contains data. Inserting {len(rows_to_insert)} rows to preserve formulas/summary...")
+            self.ws.insert_rows(
+                rows_to_insert,
+                row=start_row,
+                value_input_option="USER_ENTERED",
+                inherit_from_before=True
+            )
+        else:
+            end_row = start_row + len(rows_to_insert) - 1
+            cell_range = f"A{start_row}:E{end_row}"
+            logger.info(f"Batch updating range {cell_range}...")
+            self.ws.update(
+                range_name=cell_range,
+                values=rows_to_insert,
+                value_input_option="USER_ENTERED"
+            )
         logger.info(f"Successfully synced {len(rows_to_insert)} rows to Google Sheets!")
         return len(rows_to_insert)

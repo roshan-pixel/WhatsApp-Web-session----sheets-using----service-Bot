@@ -1,13 +1,18 @@
 # Graph Report - WhatsApp-Web-session----sheets-using----service-Bot  (2026-09-25)
 
 ## Corpus Check
-- 8 files · ~5,486 words
+- 8 files · ~5,683 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 100 nodes · 106 edges · 19 communities (8 shown, 11 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.8)
+- 112 nodes · 113 edges · 26 communities (9 shown, 17 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.7)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `65e96d96`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Community 0|Community 0]]
@@ -29,6 +34,13 @@
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `WebBridgeClient` - 13 edges
@@ -40,23 +52,25 @@
 7. `🚀 Setup & Usage Guide` - 4 edges
 8. `run_scrape()` - 3 edges
 9. `run_sync()` - 3 edges
-10. `CLI Commands` - 3 edges
+10. `WinRTOcrEngine` - 3 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `run_scrape()` --calls--> `WebBridgeClient`  [INFERRED]
   main.py → webbridge_client.py
 - `run_sync()` --calls--> `SheetsSyncer`  [INFERRED]
   main.py → sheets_syncer.py
+- `TransactionParser` --uses--> `WinRTOcrEngine`  [INFERRED]
+  parser.py → ocr_engine.py
 
-## Communities (19 total, 11 thin omitted)
+## Communities (26 total, 17 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.15
-Nodes (10): Client for interacting with real browser sessions via Kimi WebBridge. Handles ta, Extract the image from the currently active slide in the viewer., Click the 'Next' button to advance the gallery rightward., Click the 'Previous' button to navigate backwards., Scroll through all open transactions to the rightmost end.         Saves each fu, Send an action command to the WebBridge daemon., Borrow the foreground WhatsApp tab from the user's browser.         Matches the, Run JavaScript in the context of the active tab page. (+2 more)
+Cohesion: 0.10
+Nodes (16): Client for interacting with real browser sessions via Kimi WebBridge. Handles ta, Extract the image from the currently active slide in the viewer., Extract the image from the currently active slide in the viewer., Click the 'Next' button to advance the gallery rightward., Click the 'Next' button to advance the gallery rightward., Click the 'Previous' button to navigate backwards., Click the 'Previous' button to navigate backwards., Scroll through all open transactions to the rightmost end.         Saves each fu (+8 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.12
-Nodes (16): 1. Active Tab Borrowing (Zero Re-authentication), 2. Center-Distance Carousel Algorithm, 3. Zero-Taint Canvas Frame Capture, 4. Native Windows WinRT OCR (`Windows.Media.Ocr`), 5. Automated Google Sheets Synchronization, code:mermaid (flowchart TD), code:mermaid (sequenceDiagram), code:block3 (├── config.py             # Global configuration, endpoints,) (+8 more)
+Cohesion: 0.18
+Nodes (10): code:mermaid (flowchart TD), code:mermaid (sequenceDiagram), code:block3 (├── config.py             # Global configuration, endpoints,), code:text (662702685130 // 18 Sept 2026, 2:39 pm // DSR 7 WELLNESS CENT), 🔄 End-to-End Sequence Flow, 📊 Output Schema, 📂 Project Structure, 🔒 Security & Privacy (+2 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.24
@@ -82,23 +96,25 @@ Nodes (3): High-performance OCR engine leveraging native Windows WinRT (Windows.
 Cohesion: 0.40
 Nodes (4): code:text (662590373713 // 16 Sept 2026, 1:10 pm // DSR 7 WELLNESS CENT), Detailed Transaction Table, Standard Format (`UTR No // Date // To Banking Name // Amount`), WhatsApp Transaction Report
 
+### Community 19 - "Community 19"
+Cohesion: 0.33
+Nodes (6): 1. Active Tab Borrowing (Zero Re-authentication), 2. Center-Distance Carousel Algorithm, 3. Zero-Taint Canvas Frame Capture, 4. Native Windows WinRT OCR (`Windows.Media.Ocr`), 5. Automated Google Sheets Synchronization, 💡 How It Works & Key Engineering Solutions
+
 ## Knowledge Gaps
-- **17 isolated node(s):** `TransactionParser`, `code:mermaid (flowchart TD)`, `code:mermaid (sequenceDiagram)`, `1. Active Tab Borrowing (Zero Re-authentication)`, `2. Center-Distance Carousel Algorithm` (+12 more)
+- **16 isolated node(s):** `code:mermaid (flowchart TD)`, `code:mermaid (sequenceDiagram)`, `1. Active Tab Borrowing (Zero Re-authentication)`, `2. Center-Distance Carousel Algorithm`, `3. Zero-Taint Canvas Frame Capture` (+11 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `WebBridgeClient` connect `Community 0` to `Community 8`, `Community 5`?**
-  _High betweenness centrality (0.121) - this node is a cross-community bridge._
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
 - **Why does `run_scrape()` connect `Community 5` to `Community 0`?**
   _High betweenness centrality (0.084) - this node is a cross-community bridge._
 - **Why does `run_sync()` connect `Community 5` to `Community 2`?**
-  _High betweenness centrality (0.064) - this node is a cross-community bridge._
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
 - **What connects `Configuration settings for WhatsApp Web Scraper and Google Sheets Bot.`, `CLI Entrypoint for WhatsApp Web Transaction Scraper & Google Sheets Synchronizer`, `High-performance OCR engine leveraging native Windows WinRT (Windows.Media.Ocr).` to the rest of the system?**
-  _46 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _57 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.14736842105263157 - nodes in this community are weakly interconnected._
-- **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10461538461538461 - nodes in this community are weakly interconnected._

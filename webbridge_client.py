@@ -73,11 +73,14 @@ class WebBridgeClient:
 
     def borrow_active_tab(self, url: str = WHATSAPP_WEB_URL) -> Dict[str, Any]:
         """
-        Borrow the foreground WhatsApp tab from the user's browser.
-        Matches the hostname (e.g. web.whatsapp.com).
+        Borrow the WhatsApp tab from the user's browser.
+        Matches the hostname (e.g. web.whatsapp.com), trying foreground first, then background.
         """
-        logger.info(f"Borrowing active tab matching: {url}")
-        return self.send_cmd("find_tab", {"url": url, "active": True})
+        logger.info(f"Borrowing tab matching: {url}")
+        try:
+            return self.send_cmd("find_tab", {"url": url, "active": True})
+        except Exception:
+            return self.send_cmd("find_tab", {"url": url})
 
     def evaluate_js(self, code: str) -> Any:
         """Run JavaScript in the context of the active tab page."""

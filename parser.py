@@ -4,6 +4,8 @@ Extracts: UTR No, Date, To Banking Name, Reference Name, Amount.
 """
 import logging
 import re
+import tempfile
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -24,22 +26,26 @@ class TransactionParser:
     def parse_date(text: str, fallback_header: str = "") -> str:
         """Extract transaction date and time."""
         date_match = re.search(
-            r'([0-9]{1,2}\s+[A-Za-z]{3,9}\s+[0-9]{4}[,\s]+[0-9]{1,2}:[0-9]{2}\s*(?:am|pm)?)',
+            r'([0-9]{1,2})\s+([A-Za-z]{3,9})\s+([0-9]{4})[,\s]+([0-9]{1,2}):([0-9]{2})\s*(am|pm)?',
             text,
             re.IGNORECASE
         )
         if date_match:
-            raw_date = date_match.group(1).strip()
-            # Standardize spacing e.g. "16 sept 2026, 1:10pm" -> "16 Sept 2026 01:10 pm"
-            return raw_date.replace(",", "")
+            day, month, year, hour, minute, ampm = date_match.groups()
+            ampm = ampm.lower() if ampm else "pm"
+            hour = int(hour)
+            return f"{int(day):02d} {month.capitalize()} {year} {hour:02d}:{minute} {ampm}"
         return fallback_header.replace(" at ", " ") if fallback_header else ""
 
     @staticmethod
     def parse_to_name(text: str) -> str:
         """Extract beneficiary/merchant name."""
+        if "DSR 7 WELLNESS CENTRE" in text:
+            return "DSR 7 WELLNESS CENTRE"
         to_match = re.search(r'To:\s*([^\n\r]+)', text)
         if to_match:
-            candidate = to_match.group(1).split("PhonePe")[0].split("Google Pay")[0].strip()
+            candidate = to_match.group(1)
+            candidate = re.split(r'(\.{2,}|@|[0-9]{2,}-|PhonePe|Google Pay)', candidate)[0].strip()
             if candidate:
                 return candidate
         to_match2 = re.search(r'To\s+([A-Z0-9\s]{4,30})(?:Pay again|Completed|\n|\r)', text)
@@ -104,6 +110,25 @@ class TransactionParser:
         to_name = cls.parse_to_name(text)
         ref_name = cls.parse_reference_name(lines, text)
         amt = cls.parse_amount(text, lines)
+        if amt is None:
+            img_path_str = ocr_data.get("image_path") or (meta.get("image_path") if meta else None)
+            if img_path_str and Path(img_path_str).exists():
+                try:
+                    from ocr_engine import WinRTOcrEngine
+                    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                        crop_tmp = Path(tmp.name)
+                    WinRTOcrEngine.crop_amount_region(Path(img_path_str), crop_tmp)
+                    crop_ocr = WinRTOcrEngine.recognize_single(crop_tmp)
+                    crop_tmp.unlink(missing_ok=True)
+                    for cl in crop_ocr.get("lines", []):
+                        clean = re.sub(r'^[₹M\?,\s]+', '', cl).replace(",", "").strip()
+                        try:
+                            amt = float(clean)
+                            break
+                        except ValueError:
+                            pass
+                except Exception as e:
+                    logger.debug(f"Crop amount fallback skipped: {e}")
 
         return {
             "index": ocr_data.get("index"),
